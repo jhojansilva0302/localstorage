@@ -109,7 +109,8 @@ btnVer.addEventListener("click", () => {
       alert("Usuario eliminado.");
     });
   });
-});//======LIMPIAR FORMULARIO
+});
+//======LIMPIAR FORMULARIO
 btnLimpiar.addEventListener("click", () => {
 
     const nombre = document.getElementById("nombre").value;
