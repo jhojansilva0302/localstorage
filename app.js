@@ -58,56 +58,58 @@ btnGuardar.addEventListener("click", () => {
 });
 
 
-// ==== VER/OCULTAR DATOS GUARDADOS CON OPCIÓN DE BORRAR INDIVIDUAL ====
+// ==== VER/OCULTAR DATOS OPCION DE BORRAR INDIVIDUAL ====
 btnVer.addEventListener("click", () => {
   const resultado = document.getElementById("resultado");
+  const usuariosGuardados = JSON.parse(localStorage.getItem("usuarios")) || [];
 
-  if (resultado.style.display !== "none" && resultado.innerHTML.trim() !== "") {
+ 
+  if (usuariosGuardados.length === 0) {
+    alert("No hay usuarios guardados.");
     resultado.style.display = "none";
+    resultado.innerHTML = "";
+    return;
+  }
+
+ 
+  if (resultado.style.display === "block") {
+    resultado.style.display = "none";
+    resultado.innerHTML = "";
     btnVer.textContent = "Ver Datos";
     return;
   }
 
-  const usuariosGuardados = JSON.parse(localStorage.getItem("usuarios")) || [];
+ 
+  let html = "<h3>Usuarios Guardados:</h3>";
+  usuariosGuardados.forEach((u, i) => {
+    html += `
+            <div class="usuario" data-index="${i}">
+                <p><strong>Usuario #${i + 1}</strong></p>
+                <p><strong>Nombre:</strong> ${u.nombre}</p>
+                <p><strong>Email:</strong> ${u.email}</p>
+                <p><strong>Edad:</strong> ${u.edad}</p>
+                <button class="btn-borrar-individual" data-index="${i}">Borrar Usuario</button>
+            </div>
+            <hr>
+        `;
+  });
 
-  if (usuariosGuardados.length > 0) {
-    let html = "<h3>Usuarios Guardados:</h3>";
+  resultado.innerHTML = html;
+  resultado.style.display = "block";
+  btnVer.textContent = "Ocultar Datos";
 
-    usuariosGuardados.forEach((u, i) => {
-      html += `
-        <div class="usuario" data-index="${i}">
-          <p><strong>Usuario #${i + 1}</strong></p>
-          <p><strong>Nombre:</strong> ${u.nombre}</p>
-          <p><strong>Email:</strong> ${u.email}</p>
-          <p><strong>Edad:</strong> ${u.edad}</p>
-          <button class="btn-borrar-individual" data-index="${i}">Borrar Usuario</button>
-        </div>
-        <hr>
-      `;
+ 
+  const botonesBorrar = document.querySelectorAll(".btn-borrar-individual");
+  botonesBorrar.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const index = parseInt(e.target.getAttribute("data-index"));
+      usuariosGuardados.splice(index, 1);
+      localStorage.setItem("usuarios", JSON.stringify(usuariosGuardados));
+      btnVer.click();
+      alert("Usuario eliminado.");
     });
-
-    resultado.innerHTML = html;
-    resultado.style.display = "block";
-    btnVer.textContent = "Ocultar Datos";
-
-    // Agregar evento a cada botón de borrar individual
-    const botonesBorrar = document.querySelectorAll(".btn-borrar-individual");
-    botonesBorrar.forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const index = parseInt(e.target.getAttribute("data-index"));
-        usuariosGuardados.splice(index, 1);
-        localStorage.setItem("usuarios", JSON.stringify(usuariosGuardados));
-        btnVer.click(); // refresca la lista
-        alert(" Usuario eliminado.");
-      });
-    });
-  } else {
-    resultado.innerHTML = "<p>No hay usuarios guardados.</p>";
-    resultado.style.display = "block";
-    btnVer.textContent = "Ocultar Datos";
-  }
-});
-//======LIMPIAR FORMULARIO
+  });
+});//======LIMPIAR FORMULARIO
 btnLimpiar.addEventListener("click", () => {
 
     const nombre = document.getElementById("nombre").value;
